@@ -1,0 +1,477 @@
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<process.h>
+#include<iostream.h>
+#include<time.h>
+#include<iomanip.h>
+#include<fstream.h>
+
+
+class details
+{
+public:
+char name[100];
+char email[100];
+float mb;
+long mn;
+char address[100];
+char city[100];
+float pin;
+void getdata()
+{
+cout<<"Enter the Employee Id no  :  ";
+cin>>mb;
+cout<<endl;
+cout<<"Enter the Employee Name   :  ";
+gets(name);
+cout<<endl;
+cout<<"Enter the Mobile number   :  ";
+cin>>mn;
+cout<<endl;
+cout<<"Enter the E-mail address  :  ";
+gets(email);
+cout<<endl;
+cout<<"Enter the Domicile        :  ";
+gets(city);
+cout<<endl;
+cout<<"Enter the Address         :  ";
+gets(address);
+cout<<endl;
+cout<<"Enter the Pincode         :  ";
+cin>>pin;
+cout<<endl;
+}
+
+void disp_data()
+{
+cout<<"                            Employee Id no   : ";
+cout<<mb;
+cout<<endl;
+cout<<"                            Employee Name    : ";
+puts(name);
+cout<<"                            Mobile Number    : ";
+cout<<mn<<endl;
+cout<<"                            E-mail address   : ";
+puts(email);
+cout<<"                            Domicile         : ";
+puts(city);
+cout<<"                            Address          : ";
+puts(address);
+cout<<"                            Pincode          : ";
+cout<<pin;
+cout<<endl;
+}
+
+int getmobile()
+{
+return mb;
+}
+
+void modify();
+
+}d1,d2;
+
+void details::modify()
+{
+cout<<"                       Employee no               :  ";
+cout<<mb<<endl;
+cout<<"                       Employee's Name           :  ";
+puts(name);
+cout<<"                       Mobile Number             :  ";
+cout<<mn<<endl;
+cout<<"                       E-mail address            :  ";
+puts(email);
+cout<<"                       Domicile                  :  ";
+puts(city);
+cout<<"                       Address                   :  ";
+puts(address);
+cout<<"                       Pincode                   :  ";
+cout<<pin;
+cout<<endl;
+
+cout<<"Enter the new contact details : - \n";
+
+char nm[100]=" ",em[100]=" ";
+char ad[100]=" ";
+float mmbb,pi,mmbbb;
+char ci[100]=" ";
+cout<<"Enter the Employee's New Id Number (enter '-1' to retain old one) : \n ";
+cin>>mmbb;
+cout<<endl;
+cout<<"Enter the New Employee's Name (enter '.' to retain old one) : \n ";
+cin>>nm;
+cout<<endl;
+cout<<"Enter the New Mobile Number (enter '-1' to retain old one) : \n ";
+cin>>mmbbb;
+cout<<endl;
+cout<<"Enter the New E-mail (enter '.' to retain old one) : \n ";
+cin>>em;
+cout<<endl;
+cout<<"Enter the New Domicile (enter '.' to retain old one) : \n ";
+gets(ci);
+cout<<endl;
+cout<<"Enter the New Address (enter '.' to retain old one) : \n ";
+cin>>ad;
+cout<<endl;
+cout<<"Enter the New Pincode : \n ";
+cin>>pi;
+cout<<endl;
+if(mmbb!=-1)
+mb=mmbb;
+if(strcmp(nm,".")!=0)
+strcpy(name,nm);
+if(mmbbb!=-1)
+mn=mmbbb;
+if(strcmp(em,".")!=0)
+strcpy(email,em);
+if(strcmp(ad,".")!=0)
+strcpy(address,ad);
+if(strcmp(ci,".")!=0)
+strcpy(city,ci);
+if(pi!=-1)
+pi=pin;
+}
+
+
+void add()
+{
+	 ofstream fo("sg.dat",ios::app|ios::binary);
+	 char ans='y';
+	 while(ans=='y')
+	  {
+	    d1.getdata();
+	    fo.write((char*)&d1,sizeof(d1));
+	    cout<<"\n\n";
+
+	    cout<<"  Want to enter more details...... (y/n) \n  ";
+	    cin>>ans;
+	    cout<<"\n\n";
+	  }
+	  fo.close();
+}
+
+
+void edit()
+{
+	 fstream  mob("sg.dat",ios::in|ios::out|ios::binary);
+	 long pos;
+	 char found1= 'f';
+	 int mmm;
+	 cout<<"Enter the Employee's Id number to be modified : ";
+	 cin>>mmm;
+	 while(!mob.eof())
+	 {
+	 pos=mob.tellg();
+	 mob.read((char*)&d1,sizeof(d1));
+	  if(d1.getmobile()!=mmm)
+	  {
+	   d1.modify();
+	   mob.seekg(pos);
+	   mob.write((char*)&d1,sizeof(d1));
+	   found1='t';
+	  break;
+	  }
+	 }
+	 if(found1=='f')
+	 cout<<"Record not found !!\n";
+	 mob.seekg(0);
+	 mob.close();
+}
+
+
+void deletes()
+{
+	 details d1,d2;
+	 ifstream fin("sg.dat",ios::in|ios::binary);
+	 ofstream fout("temp.dat",ios::out|ios::binary);
+	 int mm;
+	 cout<<"Enter the Employee's Id number to be deleted : ";
+	 cin>>mm;
+	 while(fin.read((char*)&d1,sizeof(d1)));
+	   {
+	   if(d1.getmobile()!=mm)
+	   fout.write((char*)&d1,sizeof(d1));
+	   }
+	 fin.close();
+	 fout.close();
+	 remove("sg.dat");
+	 rename("temp.dat","sg.dat");
+}
+
+
+void search()
+{
+	 char founds='n';
+	 int mbno;
+	 ifstream fins("sg.dat",ios::app|ios::binary|ios::trunc);
+
+	 cout<<"Enter the Employee's Id number to be searched for : ";
+	 cin>>mbno;
+	 cout<<endl;
+	 while(!fins.eof())
+	 {
+	 fins.read((char*)&d1,sizeof(d1));
+	  if(d1.getmobile()==mbno)
+	   {
+	    d1.disp_data();
+	    founds='y';
+	    break;
+	   }
+	 }
+	 if(founds=='n')
+	 cout<<"        Id number not found in the diary  !!!! \n"<<endl;
+	 fins.close();
+}
+
+
+void display()
+{
+	 fstream mobe;
+	 mobe.open("sg.dat",ios::in|ios::binary);
+	 cout<<"Now the file contains \n\n";
+	  while(!mobe.eof())
+	  {
+	  mobe.read((char*)&d1,sizeof(d1));
+	  if(mobe.eof())
+	  break;
+	  d1.disp_data();
+	  cout<<"\n\n";
+	  }
+	  mobe.close();
+}
+
+
+
+void database()
+{
+char ch;
+main :
+do
+{
+int n;
+cout<<"********************************************************************************"<<endl;
+cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+cout<<"********************************************************************************\n"<<endl;
+
+cout<<"                                    MAIN MENU \n\n";
+cout<<"        1.>Add Employee's details \n";
+cout<<"        2.>Edit Employee's details  \n";
+cout<<"        3.>Delete Employee's details  \n";
+cout<<"        4.>Search for Employee's details \n";
+cout<<"        5.>Display Employee's details \n";
+cout<<"        6.>Exit \n\n";
+
+cout<<endl;
+cout<<"     Make your choice : -    ";
+cin>>n;
+
+cout<<"********************************************************************************"<<endl;
+switch(n)
+{
+
+case 1 : clrscr();
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+	 cout<<"********************************************************************************\n\n"<<endl;
+
+	 cout<<"                             ADD EMPLOYEE DETAILS  \n\n";
+
+	 add();
+	 cout<<endl;
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".....................End of adding the records to the database.................."<<endl;
+	 cout<<"********************************************************************************\n"<<endl;
+
+	 break;
+
+case 2 : clrscr();
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+	 cout<<"********************************************************************************\n"<<endl;
+
+	 cout<<"                             EDIT EMPLOYEE DETAILS  \n\n\n";
+
+	 edit();
+	 cout<<endl;
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<"......................End of modifying the employee's records..................."<<endl;
+	 cout<<"********************************************************************************\n"<<endl;
+
+	 break;
+
+case 3 : clrscr();
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+	 cout<<"********************************************************************************\n"<<endl;
+	 cout<<"                            DELETE EMPLOYEE DETAILS \n\n\n";
+
+	 deletes();
+	 cout<<"\n\n\n";
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<"......................End of deleting the employee's records...................."<<endl;
+	 cout<<"********************************************************************************\n"<<endl;
+
+	 break;
+
+case 4 : clrscr();
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+	 cout<<"********************************************************************************\n"<<endl;
+
+	 cout<<"                          SEARCHING EMPLOYEE DETAILS\n\n\n";
+
+	 search();
+	 cout<<endl;
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<"......................End of searching the employee's details..................."<<endl;
+	 cout<<"********************************************************************************\n"<<endl;
+
+	 break;
+
+
+case 5 : clrscr();
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+	 cout<<"********************************************************************************\n\n"<<endl;
+
+	 display();
+	 cout<<endl;
+
+	 cout<<"********************************************************************************\n"<<endl;
+
+	 break;
+
+case 6 : char e;
+	 clrscr();
+	 exit :
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+	 cout<<"********************************************************************************\n\n\n"<<endl;
+
+	 cout<<"                    Are you sure you want to exit (y/n) ?  ";
+	 cin>>e;
+	 clrscr();
+
+	 if(e=='Y'||e=='y')
+	 exit(0);
+	 else
+	 goto main;
+
+	 break;
+
+default :
+	    cout<<"********************************************************************************\n"<<endl;
+	    cout<<"Invalid Choice\n\n";
+
+	    break;
+
+    }
+
+    cout<<"                Do you want to continue to the main menu.... (y/n)  \n";
+    cin>>ch;
+    clrscr();
+
+    if(ch=='Y'||ch=='y')
+    goto main;
+    else
+    goto exit;
+
+    }while(ch=='Y'||ch=='y');
+
+}
+
+
+void main()
+{
+
+clrscr();
+char id[100];
+char pass[100];
+
+mains :
+cout<<"********************************************************************************"<<endl;
+cout<<".........................WELCOME TO SNG & SON'S PVT LTD........................."<<endl;
+cout<<"********************************************************************************\n\n\n"<<endl;
+
+cout<<"                             User ID  :  ";
+gets(id);
+cout<<endl;
+cout<<"                             Password :  ";
+gets(pass);
+cout<<endl;
+
+clrscr();
+if((strcmp(pass,"shourya")==0))
+{
+if((strcmp(id,"shourya")==0))
+{
+int ch1;
+
+do
+{
+int n1;
+cout<<"********************************************************************************"<<endl;
+cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+cout<<"********************************************************************************\n\n"<<endl;
+
+cout<<"                            Select your options : - \n";
+cout<<endl;
+cout<<"                             1.>Open the data base\n";
+cout<<endl;
+cout<<"                             2.>Exit \n";
+cout<<endl;
+cout<<endl;
+cout<<"                           Enter your choice :  ";
+cin>>n1;
+
+clrscr();
+switch(n1)
+{
+case 1:
+	database();
+
+	break;
+
+case 2 :
+	 char ex;
+
+	 cout<<"********************************************************************************"<<endl;
+	 cout<<".......................SHOURYA NISHI GUPTA & SON'S PVT LTD......................"<<endl;
+	 cout<<"********************************************************************************\n\n\n"<<endl;
+
+	  cout<<"                    Are you sure you want to exit (y/n) ?   " ;
+	 cin>>ex;
+
+	 clrscr();
+	 if(ex=='Y'||ex=='y')
+	 exit(0);
+	 else
+	 goto mains;
+
+	 break;
+
+default : cout<<"Invalid choice \n";
+
+}
+exit(0);
+
+}while(ch1=='Y'||ch1=='y');
+}
+}
+
+else
+exit(0);
+
+getch();
+}
